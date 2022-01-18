@@ -1,6 +1,6 @@
 Iso-Seq Analysis Pipeline
 
-This pipeline consists of the command lines based on the PacBio IsoSeq3 (https://github.com/PacificBiosciences/IsoSeq), SQANTI3 (https://github.com/ConesaLab/SQANTI3) and the tools of the cDNA_Cupcake https://github.com/Magdoll/cDNA_Cupcake) for more conveniently analyzing the Iso-Seq dataset of the PacBio.
+This pipeline consists of the command lines based on the PacBio IsoSeq3 v3.4.0 (https://github.com/PacificBiosciences/IsoSeq), SQANTI3 v4.2 (https://github.com/ConesaLab/SQANTI3) and the tools of the cDNA_Cupcake v28.0.0 (https://github.com/Magdoll/cDNA_Cupcake) for more conveniently analyzing the Iso-Seq dataset of the PacBio.
 
 It is designed for executing in the Apollo server (apollo-acc.coh.org) of the City of Hope using the interactive job mode (http://apollo.coh.org/user-guide/interactivejobs/). The modules must be loaded in advance to the server.
 
