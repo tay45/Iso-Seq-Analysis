@@ -82,12 +82,12 @@ while True:
 				short_reads = input("Enter the path of the 'short_reads.bam'.: ")
 				input_file2(short_reads)
 				#Run SQANTI3
-				sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --short_reads " + short_reads + " -c " + splice_junction + " --cpus " + str(cpus) + " --report both"
+				sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --short_reads " + short_reads + " -c " + splice_junction + " --cpus " + str(cpus) + " --genename " + " --report both"
 				os.system(sqanti3_qc)
 				print("***Completing the process***")
 				time.sleep(2)
 				quit()
-		sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --cpus " + str(cpus) + " --report both"
+		sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --cpus " + str(cpus) + " --genename " + " --report both"
 		os.system(sqanti3_qc)
 		print("***Completing the process***")
 		time.sleep(2)
@@ -146,14 +146,14 @@ while True:
 		short_reads = ""
 		short_reads = input("Enter the path of the 'short_reads.bam'.: ")
 		input_file2(short_reads)
-		sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --short_reads " + short_reads + " -c " + splice_junction + " --cpus " + str(cpus) + " --report both"
+		sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --short_reads " + short_reads + " -c " + splice_junction + " --cpus " + str(cpus) + " --genename " + " --report both"
 		os.system(sqanti3_qc)
 		print("***Completing the process***")
 		time.sleep(2)
 		quit()
 
 #Run SQANTI3
-sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --cpus " + str(cpus) + " --report both"
+sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --cpus " + str(cpus) + " --genename " + " --report both"
 subprocess.run(sqanti3_qc, shell=True)
 
 print("***Completing the process***")
