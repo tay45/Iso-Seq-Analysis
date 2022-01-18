@@ -109,7 +109,7 @@ lima_bam = os.path.join(current_path, "lima.bam")
 primers = os.path.join(current_path, "primers.fasta")
 out = os.path.join(current_path, "flnc.bam")
 
-refine = "isoseq3 refine" + " " + lima_bam + " " + primers + " " + out
+refine = "isoseq3 refine" + " " + lima_bam + " " + primers + " " + out + " --require-polya"
 os.system(refine)
 
 subprocess.call("ls flnc.*", shell = True)
