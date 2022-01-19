@@ -24,10 +24,12 @@ The input must be HiFi reads (ccs.bam; QV>20). If the raw data is the continuous
 
 The 'supporting_files' folder (/net/isi-dcnl/ifs/user_data/Seq/PacBio/thkang/Pipelines/IsoSeq3_Sqanti3/supporting_files) contains the files requiring for the SQANTI3 execution. If you need a more information regarding the files, please refer to the instruction of the SQANTI3 (https://github.com/ConesaLab/SQANTI3/wiki/Running-SQANTI3-Quality-Control).
 
-- Genome reference (.fasta) 
-- Annotation (.gtf)
-- CAGE Peak (.bed)
-- polyA_motif (.txt)
+- Genome reference: GRCh38.p12.genome.fa 
+- Annotation: gencode.v30.chr_patch_hapl_scaff.annotation.gtf; gencode.v30.annotation.gtf
+- CAGE_Peak: hg38.cage_peak_phase1and2combined_coord.bed
+- polyA_Peak: atlas.clusters.2.0.GRCh38.96.bed
+- polyA_Motif: mouse_and_human.polyA_motif.txt
+- tappAS-annotation: Homo_sapiens_GRCh38_Ensembl_86.gff3; Homo_sapiens_GRCh38_RefSeq_78.gff3
 
 The 'fusion.py' and 'chain_fusion.py' can be used after completing the process of the 'isoseq3.py'. But, these are not supported by Python3. Please replace the Python3 with the Python2 in the same shell before executing the scripts.
 
