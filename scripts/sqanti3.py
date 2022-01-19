@@ -68,21 +68,21 @@ while True:
 		cpus = input("Enter the number of the cpus to use: ")
 		#Short reads
 		while True:
-			answer = input("Do you have Splice-Junctions Coverage by Short-Reads?:")
+			answer = input("Do you want to provide Short-Read fastq files (fofn)?:")
 			if answer.lower().startswith("n"):
 				print("***Running SQANTI***")
 				time.sleep(2)
 				#Run SQANTI3
 				break
 			elif answer.lower().startswith("y"):
-				splice_junction = ""
-				splice_junction = input("Enter the path of the 'SJ.out.tab'.: ")
-				input_file2(splice_junction)
+				#splice_junction = ""
+				#splice_junction = input("Enter the path of the 'SJ.out.tab'.: ")
+				#input_file2(splice_junction)
 				short_reads = ""
-				short_reads = input("Enter the path of the 'short_reads.bam'.: ")
+				short_reads = input("Enter the path of the 'short_reads.fastq (fofn)'.: ")
 				input_file2(short_reads)
 				#Run SQANTI3
-				sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --short_reads " + short_reads + " -c " + splice_junction + " --cpus " + str(cpus) + " --genename " + " --report both"
+				sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --short_reads " + short_reads + " --cpus " + str(cpus) + " --genename " + " --report both"
 				os.system(sqanti3_qc)
 				print("***Completing the process***")
 				time.sleep(2)
@@ -134,19 +134,19 @@ cpus = input("Enter the number of the cpus to use: ")
 
 #Short reads
 while True:
-	answer = input("Do you have Splice-Junctions Coverage by Short-Reads?:")
+	answer = input("Do you want to provide Short-Read fastq files (fofn)?:")
 	if answer.lower().startswith("n"):
 		print("***Running SQANTI***")
 		time.sleep(2)
 		break
 	elif answer.lower().startswith("y"):
-		splice_junction = ""
-		splice_junction = input("Enter the path of the 'SJ.out.tab'.: ")
-		input_file2(splice_junction)
+		#splice_junction = ""
+		#splice_junction = input("Enter the path of the 'SJ.out.tab'.: ")
+		#input_file2(splice_junction)
 		short_reads = ""
-		short_reads = input("Enter the path of the 'short_reads.bam'.: ")
+		short_reads = input("Enter the path of the 'short_reads.fastq (fofn)'.: ")
 		input_file2(short_reads)
-		sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --short_reads " + short_reads + " -c " + splice_junction + " --cpus " + str(cpus) + " --genename " + " --report both"
+		sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --short_reads " + short_reads + " --cpus " + str(cpus) + " --genename " + " --report both"
 		os.system(sqanti3_qc)
 		print("***Completing the process***")
 		time.sleep(2)
