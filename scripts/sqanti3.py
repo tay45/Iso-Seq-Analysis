@@ -134,7 +134,7 @@ input_file2(polya_peak)
 
 #Add polya_motif file
 polya_motif = ""
-polya_motif = input("Enter the path of the 'polyA_motif.txt'.: ")
+polya_motif = input("Enter the path of the 'polyA_motif_txt'.: ")
 input_file2(polya_motif)
 
 #Add tappAS-annotation file
