@@ -197,22 +197,7 @@ out = os.path.join(current_path, "collapsed.gff")
 collapse = "isoseq3 collapse" + " " + aligned_bam + " " + ccs + " " + out
 os.system(collapse)
 
-#Convert gff to gtf
-input_file2("collapsed.gff")
-
-current_path = os.path.abspath(os.getcwd())
-print(current_path)
-
-collapsed_gff = os.path.join(current_path, "collapsed.gff")
-out = os.path.join(current_path, "collapsed.gtf")
-
-convert_gff = "gffread -T" + " " + collapsed_gff + " -o" + " " + out
-os.system(convert_gff)
-
-subprocess.call("ls collapsed.*", shell = True)
-time.sleep(2)
-
 
 
 ##Run SQANTI3
-exec(open("sqanti3.py").read())	
+exec(open("sqanti3.py").read())
