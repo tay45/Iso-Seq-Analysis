@@ -24,7 +24,7 @@ The input must be HiFi reads (ccs.bam; QV>20). If the raw data is the continuous
 
 The 'supporting_files' folder (/net/isi-dcnl/ifs/user_data/Seq/PacBio/thkang/Pipelines/IsoSeq3_Sqanti3/supporting_files) contains the files requiring for the SQANTI3 execution. If you need a more information regarding the files, please refer to the instruction of the SQANTI3 (https://github.com/ConesaLab/SQANTI3/wiki/Running-SQANTI3-Quality-Control).
 
-- Genome reference: GRCh38.p12.genome.fa 
+- Genome reference: GRCh38.p12.genome.fa; hg38.fa
 - Annotation: gencode.v30.chr_patch_hapl_scaff.annotation.gtf; gencode.v30.annotation.gtf
 - CAGE_Peak: hg38.cage_peak_phase1and2combined_coord.bed
 - polyA_Peak: atlas.clusters.2.0.GRCh38.96.bed
@@ -35,6 +35,16 @@ The 'fusion.py' and 'chain_fusion.py' can be used after completing the process o
 
 - module load Python/2.7.14
 - python fusion.py
+
+After completing the fusion analysis, the 'fusion' subfoler will be produced in the working directory. To execute the 'sqanti3.py' using the output of the fusion gene analysis, change the current directory to the 'fusion' folder ('cd fusion'), and then, run the below command.
+
+- module load SQANTI3
+- python3 sqanti3.py
+
+In the case of the chained output, the 'chain_fusion' subfolder will be produced in the working directory. To execute the 'sqanti3.py' using the output of the chained fusion gene analysis, change the current directory to the 'chain_fusion' folder (cd chain_fusion), and then, run the below command.
+
+- module load SQANTI3
+- python3 sqanti3.py
 
 For executing this pipeline in other platforms, please satisfy the prerequisite through installing below tools.
 
