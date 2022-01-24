@@ -62,3 +62,9 @@ os.system(chain_fusion)
 
 subprocess.call("ls all_samples.*", shell = True)
 time.sleep(2)
+
+subprocess.call("mv all_samples.* " + current_path + "/" + "chain_fusion", shell = True)
+subprocess.call("cp sqanti3.py " + current_path + "/" + "chain_fusion", shell = True)
+os.chdir(current_path + "/" + "chain_fusion")
+subprocess.call("mv all_samples.chained.gff collapsed.gff", shell = True)
+subprocess.call("mv all_samples.chained_count.txt collapsed.abundance.txt", shell = True)
