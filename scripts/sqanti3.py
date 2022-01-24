@@ -40,6 +40,7 @@ while True:
 		os.system(convert_gff)
 		subprocess.call("ls all_samples.chained.gtf", shell = True)
 		time.sleep(2)
+		#Change chained file names
 		#Parameters
 		input_gtf = "all_samples.chained.gtf"
 		abundance = "all_samples.chained_count.tsv"
@@ -94,15 +95,34 @@ while True:
 				os.system(sqanti3_qc)
 				print("***Completing the process***")
 				time.sleep(2)
+				subprocess.call("mkdir chain", shell = True)
+				subprocess.call("mv all_samples.* " + current_path + "/" + "chain", shell = True)
 				quit()
 		sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " --report both"
 		os.system(sqanti3_qc)
 		print("***Completing the process***")
 		time.sleep(2)
+		subprocess.call("mkdir chain", shell = True)
+		subprocess.call("mv all_samples.* " + current_path + "/" + "chain", shell = True)
 		quit()
 		
 
 #SQANTI3
+
+#Convert gff to gtf
+input_file2("collapsed.gff")
+
+current_path = os.path.abspath(os.getcwd())
+print(current_path)
+
+collapsed_gff = os.path.join(current_path, "collapsed.gff")
+out = os.path.join(current_path, "collapsed.gtf")
+
+convert_gff = "gffread -T" + " " + collapsed_gff + " -o" + " " + out
+os.system(convert_gff)
+
+subprocess.call("ls collapsed.*", shell = True)
+time.sleep(2)
 
 #Change the input file name
 subprocess.call("mv collapsed.abundance.txt collapsed.abundance.tsv", shell = True)
@@ -168,12 +188,13 @@ while True:
 		os.system(sqanti3_qc)
 		print("***Completing the process***")
 		time.sleep(2)
+		subprocess.call("mv collapsed.abundance.tsv collapsed.abundance.txt", shell = True)
 		quit()
 
 #Run SQANTI3
 sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " --report both"
 subprocess.run(sqanti3_qc, shell=True)
-
 print("***Completing the process***")
 time.sleep(2)
+subprocess.call("mv collapsed.abundance.tsv collapsed.abundance.txt", shell = True)
 quit()
