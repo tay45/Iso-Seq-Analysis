@@ -85,12 +85,19 @@ time.sleep(2)
 while True:
 	answer = raw_input("Do you have multiple fusion jobs to chain together?:")
 	if answer.lower().startswith("n"):
-		quit()
+		break
 	elif answer.lower().startswith("y"):
 		subprocess.call("mkdir chain_fusion", shell = True)
-		subprocess.call("cp chain_fusion.py chain_fusion ", shell = True)
-		subprocess.call("cd chain_fusion ", shell = True)
 		current_path = os.path.abspath(os.getcwd())
 		print(current_path)
 		execfile("chain_fusion.py")		
 		quit()
+		
+subprocess.call("mkdir fusion", shell = True)
+subprocess.call("cp aligned.sorted.sam.fusion.* " + current_path + "/" + "fusion", shell = True)
+subprocess.call("cp branch_tmp.group.txt " + current_path + "/" + "fusion", shell = True)
+subprocess.call("cp sqanti3.py " + current_path + "/" + "fusion", shell = True)
+os.chdir(current_path + "/" + "fusion")
+subprocess.call("mv aligned.sorted.sam.fusion.gff collapsed.gff", shell = True)
+subprocess.call("mv aligned.sorted.sam.fusion.abundance.txt collapsed.abundance.txt", shell = True)
+quit()
