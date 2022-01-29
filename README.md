@@ -30,6 +30,7 @@ The 'supporting_files' folder (/net/isi-dcnl/ifs/user_data/Seq/PacBio/thkang/Pip
 - polyA_Peak: atlas.clusters.2.0.GRCh38.96.bed
 - polyA_Motif: mouse_and_human.polyA_motif.txt
 - tappAS-annotation: Homo_sapiens_GRCh38_Ensembl_86.gff3; Homo_sapiens_GRCh38_RefSeq_78.gff3
+- Intropolis Junction BED: intropolis.v1.hg19_with_liftover_to_hg38.tsv.min_count_10.modified
 
 The 'fusion.py' and 'chain_fusion.py' can be used after completing the process of the 'isoseq3.py'. But, these are not supported by Python3. Please replace the Python3 with the Python2 in the same shell before executing the scripts.
 
