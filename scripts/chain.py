@@ -10,13 +10,12 @@ import time
 import gzip
 import shutil
 
-#Check the path of input files
+#Check the input files (no parser) 
 def input_file2 (path):
-	while True:
-		if os.path.isfile(path):
-			return
-		else:
-			path = input("Doesn't exist. Enter the path again: ")
+	if os.path.isfile(path):
+		return
+	else:
+		print("Doesn't exist. Please check the file location")
 
 #Open a config file
 config = open("sample.config", "w")
@@ -56,7 +55,7 @@ print(current_path)
 
 sample_config = os.path.join(current_path, "sample.config")
 
-chain = "chain_samples.py" + " " + sample_config + " " + "count_fl"
+chain = "chain_samples.py" + " " + sample_config + " " + "count_fl " + "--dun-merge-5-shorter" 
 os.system(chain)
 
 subprocess.call("ls all_samples.*", shell = True)

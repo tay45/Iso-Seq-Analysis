@@ -32,11 +32,10 @@ def input_file (parser, arg):
 
 #Check the input files (no parser) 
 def input_file2 (path):
-	while True:
-		if os.path.isfile(path):
-			return
-		else:
-			path = input("Doesn't exist. Enter the path again: ")
+	if os.path.isfile(path):
+		return
+	else:
+		print("Doesn't exist. Please check the file location")
 
 
 #Commend line arguments in lima
@@ -46,7 +45,6 @@ parser.add_argument("-p", dest="primers", required=True, help='path of input pri
 parser.add_argument("-o", dest="output", required=True, help='output file (fl.bam)', metavar="fl.bam")
 parser.add_argument("-pf", dest="primers_file", required=False, help='input primers.fasta', metavar="Primer File", type=lambda x: input_file(parser, x))
 args = parser.parse_args()
-
 
 
 #Confirm the setting of SMRT_Root
@@ -62,11 +60,9 @@ while True:
 		sys.exit()
 
 
-
 #Confirm primer sequences
 primers_file = args.primers_file
 print(primers_file.read())
-
 
 
 #run lima
@@ -85,7 +81,6 @@ os.system(lima)
 
 subprocess.call("ls fl*", shell = True)
 time.sleep(2)
-
 
 
 #run refine
@@ -114,7 +109,6 @@ os.system(refine)
 
 subprocess.call("ls flnc.*", shell = True)
 time.sleep(2)
-
 
 
 #Run cluster
@@ -150,14 +144,13 @@ while True:
 		break
 
 
-
 #Run pbmm2
 print("***Aligning***")
 time.sleep(2)
 
 #Add reference file
 reference = ""
-reference = input("Enter the path of the 'genome reference file'.: ")
+reference = input("Enter the path of the 'indexed genome reference (.mmi)'.: ")
 input_file2(reference)
 
 #Check the path of input file
@@ -179,7 +172,6 @@ subprocess.call("ls aligned.sorted.*", shell = True)
 time.sleep(2)
 
 
-
 #Run collapse
 print("***Collapsing***")
 time.sleep(2)
@@ -196,7 +188,6 @@ out = os.path.join(current_path, "collapsed.gff")
 
 collapse = "isoseq3 collapse" + " " + aligned_bam + " " + ccs + " " + out
 os.system(collapse)
-
 
 
 ##Run SQANTI3

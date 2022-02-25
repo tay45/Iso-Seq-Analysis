@@ -10,33 +10,20 @@ import time
 import gzip
 import shutil
 
+
 #Check the input files (no parser) 
 def input_file2 (path):
-	while True:
-		if os.path.isfile(path):
-			return
-		else:
-			path = input("Doesn't exist. Enter the path again: ")
+	if os.path.isfile(path):
+		return
+	else:
+		print("Doesn't exist. Please check the file location")
 
-#Convert gff to gtf
-input_file2("collapsed.gff")
-
-current_path = os.path.abspath(os.getcwd())
-print(current_path)
-
-collapsed_gff = os.path.join(current_path, "collapsed.gff")
-out = os.path.join(current_path, "collapsed.gtf")
-
-convert_gff = "gffread -T" + " " + collapsed_gff + " -o" + " " + out
-os.system(convert_gff)
-
-subprocess.call("ls collapsed.*", shell = True)
-time.sleep(2)
 
 #Parameters
 input_gtf = "collapsed.gtf"
 abundance = "collapsed.abundance.tsv"
 out_name = "out_sqanti"
+
 
 #Add annotation file
 annot_gtf = ""
@@ -74,12 +61,13 @@ coverage = input("Enter the path of the 'intropolis junction_bed'.: ")
 input_file2(coverage)
 
 #Output directory
-out_dir = ""
-out_dir = input("Enter the name of the 'output_directory'.: ")
+#out_dir = ""
+#out_dir = input("Enter the name of the 'output_directory'.: ")
 
 #CPUs
 cpus = ""
 cpus = input("Enter the number of the cpus to use: ")
+
 
 #Chaining samples
 while True:
@@ -108,84 +96,159 @@ while True:
 		input_gtf = "all_samples.chained.gtf"
 		abundance = "all_samples.chained_count.tsv"
 		out_name = "all_out_sqanti"
-		#Fusion_Short Reads
 		while True:
-			answer = input("Is this for the fusion transcripts?:")
-			if answer.lower().startswith("y"):
-				answer = input("Do you want to provide Short-Read fastq files (fofn)?:")
-				if answer.lower().startswith("y"):
-					short_reads = ""
-					short_reads = input("Enter the path of the 'short_reads.fastq (fofn)'.: ")
-					input_file2(short_reads)
-					print("***Running SQANTI***")
-					sqanti3_qc_fusion_shortRead =  "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --short_reads " + short_reads + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " --is_fusion" + " --report both"
-					os.system(sqanti3_qc_fusion_shortRead)
-					#subprocess.call("mv collapsed.abundance.tsv collapsed.abundance.txt", shell = True)
-					print("***Completing the process***")
-					time.sleep(2)
-					quit()
-				elif answer.lower().startswith("n"):
-					print("***Running SQANTI***")
-					sqanti3_qc_fusion = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " -c " + coverage + " --is_fusion" + " --report both"
-					os.system(sqanti3_qc_fusion)
-					#subprocess.call("mv collapsed.abundance.tsv collapsed.abundance.txt", shell = True)
-					print("***Completing the process***")
-					time.sleep(2)
-					quit()
-			elif answer.lower().startswith("n"):	
+			answer = input("Do you want to provide Short-Read fastq files (fofn)?:")
+			if answer.lower().startswith("n"):
+				print("***Running SQANTI***")
+				time.sleep(2)
+				#Run SQANTI3
+				sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + "sqanti3_chain" + " -fl " + abundance + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " -c " + coverage + " --report both"
+				subprocess.run(sqanti3_qc, shell=True)
+				#Save chained file in chained_file folder
+				#Current working directory
+				current_path = os.path.abspath(os.getcwd())
+				print(current_path)
+				subprocess.call("mkdir chained_files", shell = True)
+				subprocess.call("cp all_samples.* " + current_path + "/" + "chained_files", shell = True)
+				
+				#Run gtfToGenePred
+				print("***Run gtfToGenePred***")
+				time.sleep(2)
+				input_file2("all_samples.chained.gtf")
+				gtfToGenePred = "gtfToGenePred" + " " + "all_samples.chained.gtf" + " " + "all_samples.chained.genePred"
+				os.system(gtfToGenePred)
+				
+				#Run genePredToBed
+				print("***Run genePredToBed***")
+				time.sleep(2)
+				input_file2("all_samples.chained.genePred")
+				genePredToBed = "genePredToBed" + " " + "all_samples.chained.genePred" + " " + "all_samples.chained.bed12"
+				os.system(genePredToBed)
+				
+				#Run genePredToBed
+				print("***Run color_bed12_post_sqanti.py***")
+				time.sleep(2)
+				#Current working directory
+				current_path = os.path.abspath(os.getcwd())
+				print(current_path)
+				input_file2(current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_classification.txt")
+				color_bed12 = "color_bed12_post_sqanti.py" + " " + current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_classification.txt" + " " + "all_samples.chained.bed12" + " " + "all_samples.chained.colored"
+				os.system(color_bed12)
+				subprocess.call("ls all_samples.*", shell = True)
+				time.sleep(2)
+				
+				#Run IsoAnnot
+				print("***Run IsoAnnot***")
+				time.sleep(2)
+				#Current working directory
+				current_path = os.path.abspath(os.getcwd())
+				print(current_path)
+				#Check file locations
+				input_file2(current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_corrected.gtf")
+				input_file2(current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_classification.txt")
+				input_file2(current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_junctions.txt")
+				correct = current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_corrected.gtf"
+				classification = current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_classification.txt"
+				junctions = current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_junctions.txt"
+				#Run IsoAnnot.py
+				isoannot = color_bed12 = "python3 IsoAnnotLite_v2.7.0_SQ3.py" + " " + correct + " " + classification + " " + junctions + " " + "-gff3" + " " + tappAS + " " + "-novel -o" + " " + "isoannot" + " " + "-stdout" + " " + "isoannot.summaryResults"
+				os.system(isoannot)
+				subprocess.call("ls isoannot.*", shell = True)
+				time.sleep(2)
+				
+				#Ask fusion analysis
 				while True:
-					answer = input("Do you want to provide Short-Read fastq files (fofn)?:")
+					answer = input("Do you want to analyze the fusion genes?:")
 					if answer.lower().startswith("n"):
-						print("***Running SQANTI***")
-						time.sleep(2)
-						#Run SQANTI3
-						sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " -c " + coverage + " --report both"
-						subprocess.run(sqanti3_qc, shell=True)
 						print("***Completing the process***")
 						time.sleep(2)
-						#subprocess.call("mv collapsed.abundance.tsv collapsed.abundance.txt", shell = True)
 						quit()
-					elif answer.lower().startswith("y"):
-						short_reads = ""
-						short_reads = input("Enter the path of the 'short_reads.fastq (fofn)'.: ")
-						input_file2(short_reads)
-						sqanti3_qc_shortRead =  "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --short_reads " + short_reads + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " --report both"
-						os.system(sqanti3_qc_shortRead)
+					elif answer.lower().startswith("y"):	
+						exec(open("fusion.py").read())
+			elif answer.lower().startswith("y"):
+				short_reads = ""
+				short_reads = input("Enter the path of the 'short_reads.fastq (fofn)'.: ")
+				input_file2(short_reads)
+				sqanti3_qc_shortRead =  "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + "sqanti3_chain" + " -fl " + abundance + " --short_reads " + short_reads + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " --report both"
+				os.system(sqanti3_qc_shortRead)
+				#Save chained file in chained_file folder
+				#Current working directory
+				current_path = os.path.abspath(os.getcwd())
+				print(current_path)
+				subprocess.call("mkdir chained_files", shell = True)
+				subprocess.call("cp all_samples.* " + current_path + "/" + "chained_files", shell = True)
+				
+				#Run gtfToGenePred
+				print("***Run gtfToGenePred***")
+				time.sleep(2)
+				input_file2("all_samples.chained.gtf")
+				gtfToGenePred = "gtfToGenePred" + " " + "all_samples.chained.gtf" + " " + "all_samples.chained.genePred"
+				os.system(gtfToGenePred)
+
+				#Run genePredToBed
+				print("***Run genePredToBed***")
+				time.sleep(2)
+				input_file2("all_samples.chained.genePred")
+				genePredToBed = "genePredToBed" + " " + "all_samples.chained.genePred" + " " + "all_samples.chained.bed12"
+				os.system(genePredToBed)
+
+				#Run genePredToBed
+				print("***Run color_bed12_post_sqanti.py***")
+				time.sleep(2)
+				#Current working directory
+				current_path = os.path.abspath(os.getcwd())
+				print(current_path)
+				input_file2(current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_classification.txt")
+				color_bed12 = "color_bed12_post_sqanti.py" + " " + current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_classification.txt" + " " + "all_samples.chained.bed12" + " " + "all_samples.chained.colored"
+				os.system(color_bed12)
+				subprocess.call("ls all_samples.*", shell = True)
+				time.sleep(2)
+				
+				#Run IsoAnnot
+				print("***Run IsoAnnot***")
+				time.sleep(2)
+				#Current working directory
+				current_path = os.path.abspath(os.getcwd())
+				print(current_path)
+				#Check file locations
+				input_file2(current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_corrected.gtf")
+				input_file2(current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_classification.txt")
+				input_file2(current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_junctions.txt")
+				correct = current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_corrected.gtf"
+				classification = current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_classification.txt"
+				junctions = current_path + "/" + "sqanti3_chain" + "/" + "all_out_sqanti_junctions.txt"
+				#Run IsoAnnot.py
+				isoannot = color_bed12 = "python3 IsoAnnotLite_v2.7.0_SQ3.py" + " " + correct + " " + classification + " " + junctions + " " + "-gff3" + " " + tappAS + " " + "-novel -o" + " " + "isoannot" + " " + "-stdout" + " " + "isoannot.summaryResults"
+				os.system(isoannot)
+				subprocess.call("ls isoannot.*", shell = True)
+				time.sleep(2)
+				
+				while True:
+					answer = input("Do you want to analyze the fusion genes?:")
+					if answer.lower().startswith("n"):
 						print("***Completing the process***")
 						time.sleep(2)
-						#subprocess.call("mv collapsed.abundance.tsv collapsed.abundance.txt", shell = True)
 						quit()
+					elif answer.lower().startswith("y"):	
+						exec(open("fusion.py").read())
+
+
+#Convert gff to gtf
+input_file2("collapsed.gff")
+current_path = os.path.abspath(os.getcwd())
+print(current_path)
+collapsed_gff = os.path.join(current_path, "collapsed.gff")
+out = os.path.join(current_path, "collapsed.gtf")
+convert_gff = "gffread -T" + " " + collapsed_gff + " -o" + " " + out
+os.system(convert_gff)
+subprocess.call("ls collapsed.*", shell = True)
+time.sleep(2)
+
 
 #Change the input file name
 subprocess.call("mv collapsed.abundance.txt collapsed.abundance.tsv", shell = True)
 input_file2("collapsed.abundance.tsv")
 
-#Fusion_Short Reads
-while True:
-	answer = input("Is this for the fusion transcripts?:")
-	if answer.lower().startswith("y"):
-		answer = input("Do you want to provide Short-Read fastq files (fofn)?:")
-		if answer.lower().startswith("y"):
-			short_reads = ""
-			short_reads = input("Enter the path of the 'short_reads.fastq (fofn)'.: ")
-			input_file2(short_reads)
-			print("***Running SQANTI***")
-			sqanti3_qc_fusion_shortRead =  "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --short_reads " + short_reads + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " --is_fusion" + " --report both"
-			os.system(sqanti3_qc_fusion_shortRead)
-			subprocess.call("mv collapsed.abundance.tsv collapsed.abundance.txt", shell = True)
-			print("***Completing the process***")
-			time.sleep(2)
-			quit()
-		elif answer.lower().startswith("n"):
-			print("***Running SQANTI***")
-			sqanti3_qc_fusion = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " -c " + coverage + " --is_fusion" + " --report both"
-			os.system(sqanti3_qc_fusion)
-			subprocess.call("mv collapsed.abundance.tsv collapsed.abundance.txt", shell = True)
-			print("***Completing the process***")
-			time.sleep(2)
-			quit()
-	elif answer.lower().startswith("n"):	
-		break
 
 #Short Reads
 while True:
@@ -195,24 +258,124 @@ while True:
 		time.sleep(2)
 		break
 	elif answer.lower().startswith("y"):
-		#splice_junction = ""
-		#splice_junction = input("Enter the path of the 'SJ.out.tab'.: ")
-		#input_file2(splice_junction)
 		short_reads = ""
 		short_reads = input("Enter the path of the 'short_reads.fastq (fofn)'.: ")
 		input_file2(short_reads)
-		sqanti3_qc_shortRead =  "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --short_reads " + short_reads + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " --report both"
+		sqanti3_qc_shortRead =  "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + "sqanti3" + " -fl " + abundance + " --short_reads " + short_reads + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " --report both"
 		os.system(sqanti3_qc_shortRead)
-		print("***Completing the process***")
-		time.sleep(2)
 		subprocess.call("mv collapsed.abundance.tsv collapsed.abundance.txt", shell = True)
-		quit()
+		
+		#Run gtfToGenePred
+		print("***Run gtfToGenePred***")
+		time.sleep(2)
+		input_file2("collapsed.gtf")
+		gtfToGenePred = "gtfToGenePred" + " " + "collapsed.gtf" + " " + "collapsed.genePred"
+		os.system(gtfToGenePred)
+
+		#Run genePredToBed
+		print("***Run genePredToBed***")
+		time.sleep(2)
+		input_file2("collapsed.genePred")
+		genePredToBed = "genePredToBed" + " " + "collapsed.genePred" + " " + "collapsed.bed12"
+		os.system(genePredToBed)
+
+		#Run genePredToBed
+		print("***Run color_bed12_post_sqanti.py***")
+		time.sleep(2)
+		#Current working directory
+		current_path = os.path.abspath(os.getcwd())
+		print(current_path)
+		input_file2(current_path + "/" + "sqanti3" + "/" + "out_sqanti_classification.txt")
+		color_bed12 = "color_bed12_post_sqanti.py" + " " + current_path + "/" + "sqanti3" + "/" + "out_sqanti_classification.txt" + " " + "collapsed.bed12" + " " + "collapsed.colored"
+		os.system(color_bed12)
+		subprocess.call("ls collapsed.*", shell = True)
+		time.sleep(2)
+		
+		#Run IsoAnnot
+		print("***Run IsoAnnot***")
+		time.sleep(2)
+		#Current working directory
+		current_path = os.path.abspath(os.getcwd())
+		print(current_path)
+		#Check file locations
+		input_file2(current_path + "/" + "sqanti3" + "/" + "out_sqanti_corrected.gtf")
+		input_file2(current_path + "/" + "sqanti3" + "/" + "out_sqanti_classification.txt")
+		input_file2(current_path + "/" + "sqanti3" + "/" + "out_sqanti_junctions.txt")
+		correct = current_path + "/" + "sqanti3" + "/" + "out_sqanti_corrected.gtf"
+		classification = current_path + "/" + "sqanti3" + "/" + "out_sqanti_classification.txt"
+		junctions = current_path + "/" + "sqanti3" + "/" + "out_sqanti_junctions.txt"
+		#Run IsoAnnot.py
+		isoannot = color_bed12 = "python3 IsoAnnotLite_v2.7.0_SQ3.py" + " " + correct + " " + classification + " " + junctions + " " + "-gff3" + " " + tappAS + " " + "-novel -o" + " " + "isoannot" + " " + "-stdout" + " " + "isoannot.summaryResults"
+		os.system(isoannot)
+		subprocess.call("ls isoannot.*", shell = True)
+		time.sleep(2)
+		
+		while True:
+			answer = input("Do you want to analyze the fusion genes?:")
+			if answer.lower().startswith("n"):
+				print("***Completing the process***")
+				time.sleep(2)
+				quit()
+			elif answer.lower().startswith("y"):	
+				exec(open("fusion.py").read())
+
 
 #Run SQANTI3
-sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + out_dir + " -fl " + abundance + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " -c " + coverage + " --report both"
+sqanti3_qc = "sqanti3_qc.py " + input_gtf + " " + annot_gtf + " " + ref_fasta + " --cage_peak " + cage_peak + " --polyA_peak " + polya_peak + " --polyA_motif_list " + polya_motif + " -o " + out_name + " -d " + "sqanti3" + " -fl " + abundance + " --cpus " + str(cpus) + " -n 10" + " --genename" + " --isoAnnotLite" + " --gff3 " + tappAS + " -c " + coverage + " --report both"
 subprocess.run(sqanti3_qc, shell=True)
-print("***Completing the process***")
-time.sleep(2)
 subprocess.call("mv collapsed.abundance.tsv collapsed.abundance.txt", shell = True)
-quit()
+
+#Run gtfToGenePred
+print("***Run gtfToGenePred***")
+time.sleep(2)
+input_file2("collapsed.gtf")
+gtfToGenePred = "gtfToGenePred" + " " + "collapsed.gtf" + " " + "collapsed.genePred"
+os.system(gtfToGenePred)
+
+#Run genePredToBed
+print("***Run genePredToBed***")
+time.sleep(2)
+input_file2("collapsed.genePred")
+genePredToBed = "genePredToBed" + " " + "collapsed.genePred" + " " + "collapsed.bed12"
+os.system(genePredToBed)
+
+#Run genePredToBed
+print("***Run color_bed12_post_sqanti.py***")
+time.sleep(2)
+#Current working directory
+current_path = os.path.abspath(os.getcwd())
+print(current_path)
+input_file2(current_path + "/" + "sqanti3" + "/" + "out_sqanti_classification.txt")
+color_bed12 = "color_bed12_post_sqanti.py" + " " + current_path + "/" + "sqanti3" + "/" + "out_sqanti_classification.txt" + " " + "collapsed.bed12" + " " + "collapsed.colored"
+os.system(color_bed12)
+subprocess.call("ls collapsed.*", shell = True)
+time.sleep(2)
+
+#Run IsoAnnot
+print("***Run IsoAnnot***")
+time.sleep(2)
+#Current working directory
+current_path = os.path.abspath(os.getcwd())
+print(current_path)
+#Check file locations
+input_file2(current_path + "/" + "sqanti3" + "/" + "out_sqanti_corrected.gtf")
+input_file2(current_path + "/" + "sqanti3" + "/" + "out_sqanti_classification.txt")
+input_file2(current_path + "/" + "sqanti3" + "/" + "out_sqanti_junctions.txt")
+correct = current_path + "/" + "sqanti3" + "/" + "out_sqanti_corrected.gtf"
+classification = current_path + "/" + "sqanti3" + "/" + "out_sqanti_classification.txt"
+junctions = current_path + "/" + "sqanti3" + "/" + "out_sqanti_junctions.txt"
+#Run IsoAnnot.py
+isoannot = color_bed12 = "python3 IsoAnnotLite_v2.7.0_SQ3.py" + " " + correct + " " + classification + " " + junctions + " " + "-gff3" + " " + tappAS + " " + "-novel -o" + " " + "isoannot" + " " + "-stdout" + " " + "isoannot.summaryResults"
+os.system(isoannot)
+subprocess.call("ls isoannot.*", shell = True)
+time.sleep(2)
+
+while True:
+	answer = input("Do you want to analyze the fusion genes?:")
+	if answer.lower().startswith("n"):
+		print("***Completing the process***")
+		time.sleep(2)
+		quit()
+	elif answer.lower().startswith("y"):	
+		exec(open("fusion.py").read())
 			
