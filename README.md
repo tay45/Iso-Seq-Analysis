@@ -40,7 +40,7 @@ For continuous long reads (CLR) (movieX.subreads.bam), generate ccs.bam using th
 
 ccs movieX.subreads.bam movieX.ccs.bam --min-rq 0.9
 
-If you omit the -fa argument, the pipeline will skip the skera_split step, which is intended for fragmenting Kinnes concatenated reads. This is applicable for conventional bulk Iso-Seq analysis.
+If you omit the -fa argument, the pipeline will skip the skera_split step, which is intended for fragmenting Kinnex concatenated reads. This is applicable for conventional bulk Iso-Seq analysis.
 
 ### 3. Executing the SQANTI3 Pipeline
 To run the SQANTI3 pipeline with machine learning (ML) filtering and rescue:
