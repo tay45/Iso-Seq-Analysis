@@ -1,6 +1,6 @@
 # Iso-Seq Analysis Pipeline
 
-This pipeline is designed for processing PacBio Iso-Seq data, including both conventional and Kinnes full-length bulk Iso-Seq analyses. It integrates PacBio IsoSeq3 v4.1.2 (part of SMRT Link tools v13.1), SQANTI3 v5.2.2 (SQANTI3 GitHub), and cDNA_Cupcake v28.0.0 (cDNA_Cupcake GitHub) to provide an end-to-end solution for Iso-Seq data analysis. This pipeline aims to simplify Iso-Seq analysis for users with little to no prior experience, requiring just two command lines and a configuration file. The configuration file includes helpful comments to guide users in selecting the appropriate analysis steps.
+This pipeline is designed for processing PacBio Iso-Seq data, including both conventional and Kinnex full-length bulk Iso-Seq analyses. It integrates PacBio IsoSeq3 v4.1.2 (part of SMRT Link tools v13.1), SQANTI3 v5.2.2 (SQANTI3 GitHub), and cDNA_Cupcake v28.0.0 (cDNA_Cupcake GitHub) to provide an end-to-end solution for Iso-Seq data analysis. This pipeline aims to simplify Iso-Seq analysis for users with little to no prior experience, requiring just two command lines and a configuration file. The configuration file includes helpful comments to guide users in selecting the appropriate analysis steps.
 
 ## Environment Setup
 The pipeline is designed to run on the Apollo server (apollo-acc.coh.org) at City of Hope (Duarte, CA) in both batch and interactive job modes. For detailed information on the server, visit HPRCC.
