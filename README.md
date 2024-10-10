@@ -58,11 +58,17 @@ The supporting_files directory (located at /nfs-irwrsrchnas01/labs/Seq/PacBio/th
 #### Supporting Files:
 
 Genome Reference: GRCh38.p12.genome.fa, hg38.fa
+
 Annotation: gencode.v30.chr_patch_hapl_scaff.annotation.gtf, gencode.v30.annotation.gtf
+
 CAGE Peak: hg38.cage_peak_phase1and2combined_coord.bed
+
 PolyA Peak: atlas.clusters.2.0.GRCh38.96.bed
+
 PolyA Motif: mouse_and_human.polyA_motif.txt
+
 tappAS Annotation: Homo_sapiens_GRCh38_Ensembl_86.gff3, Homo_sapiens_GRCh38_RefSeq_78.gff3
+
 Intropolis Junction BED: intropolis.v1.hg19_with_liftover_to_hg38.tsv.min_count_10.modified
 
 ## Installation for Other Platforms
