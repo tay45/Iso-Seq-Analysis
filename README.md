@@ -17,10 +17,13 @@ module load SQANTI3/5.2.2
 ### 1. Preparing the Files
 Download the following files to your working directory:
 
-isoseq3.py,
-sqanti3.py,
-chain_fusion.py,
-config.yaml.
+isoseq3.py
+
+sqanti3.py
+
+chain_fusion.py
+
+config.yaml
 
 Edit the config.yaml file to specify the required and optional arguments based on your analysis needs.
 
@@ -50,6 +53,7 @@ python sqanti3.py
 #### Note: This pipeline only includes the ML-based filter and rescue functionality. For rule-based filtering and rescue, refer to the official SQANTI3 documentation:
 
 'https://github.com/ConesaLab/SQANTI3/wiki/Running-SQANTI3-filter'
+
 'https://github.com/ConesaLab/SQANTI3/wiki/Running-SQANTI3-rescue'
 
 ### Supporting Files
