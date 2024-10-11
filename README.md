@@ -82,5 +82,7 @@ Intropolis Junction BED: intropolis.v1.hg19_with_liftover_to_hg38.tsv.min_count_
 To run this pipeline on platforms other than Apollo, install the following tools:
 
 IsoSeq3 (https://github.com/PacificBiosciences/IsoSeq)
+
 cDNA_Cupcake (https://github.com/Magdoll/cDNA_Cupcake)
+
 SQANTI3 (https://github.com/ConesaLab/SQANTI3)
