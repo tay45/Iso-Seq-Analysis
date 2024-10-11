@@ -13,20 +13,20 @@ samples:
 
 # Configuration for the SQANTI3 pipeline
 # SQANTI3 QC and Rescue
-input_gtf: isoseq.lima.refine.cluster2.mapped.collapse_isoforms.sorted.gff
-ref_gtf: gencode.vM28.annotation.sorted.gtf # Combined GTF for both QC and Rescue
-ref_genome: mouse_GRCm39.fasta # Combined genome for both QC and Rescue
-output_dir: test
-out_name: isoseq3_sqanti3
-abundance: isoseq.lima.refine.cluster2.mapped.collapse_isoforms.abundance.txt
-tappAS: gencode.vM28.annotation.sorted.gff3 # If you need to convert the annot.gtf to the annot.gff3, you should use the 'gffread' via 'module load gffread/0.12.7' on the Apollo server (gffread my_annotation.gtf -T -o my_annotation.gff3)
+input_gtf: # collapse.gff (from IsoSeq3 pipeline)
+ref_gtf: # ref_annot.gtf (Combined GTF for both QC and Rescue)
+ref_genome: # ref_genome.fasta (Combined genome for both QC and Rescue)
+output_dir: # outdir name
+out_name: # outfile name
+abundance: # abundance.txt (from IsoSeq3 pipeline)
+tappAS: # If you need to convert the annot.gtf to the annot.gff3, you should use the 'gffread' via 'module load gffread/0.12.7' on the Apollo server (gffread my_annotation.gtf -T -o my_annotation.gff3)
 
 # Optional short-read input
-short_reads: # Leave empty if not using short reads
-cage_peak: refTSS_v3.3_mouse_coordinate.mm10.sorted.bed
-polya_peak: 
-polya_motif: /net/nfs-irwrsrchnas01.coh.org/labs/Seq/PacBio/thkang/Pipelines/IsoSeq3_Sqanti3/supporting_files/mouse_and_human.polyA_motif.txt
-coverage: intropolis_hg38_mm10.min_count_10.modified.sorted.tsv
+short_reads: # load a fofn file (leave empty if not using short reads)
+cage_peak: # cage peak file (ex, refTSS_v3.3_mouse_coordinate.mm10.sorted.bed)
+polya_peak: # polya peak file
+polya_motif: # poly motif file (ex, mouse_and_human.polyA_motif.txt)
+coverage: # junction coverage file (ex, intropolis_hg38_mm10.min_count_10.modified.sorted.tsv)
 cpus: 1
 chunks: 1
 
@@ -48,8 +48,8 @@ version: False  # Set to true to display version of the tool
 
 # SQANTI3 Rescue Options
 run_rescue: true  # Set to true to run rescue after ML filter
-ref_classif: /net/nfs-irwrsrchnas01.coh.org/labs/Seq/PacBio/thkang/Pipelines/IsoSeq3_Sqanti3/IsoSeq_Sqanti3_test/test/isoseq3_sqanti3_classification.txt  # Reference classification file
+ref_classif: # reference classificationfile (ex, *_classification.txt)
 rescue_mono_exonic: fsm  # Options: none, fsm, all (default: fsm)
 mode: automatic  # Options: automatic, full
-randomforest: /net/nfs-irwrsrchnas01.coh.org/labs/Seq/PacBio/thkang/Pipelines/IsoSeq3_Sqanti3/IsoSeq_Sqanti3_test/test/randomforest.RData  # Optional, path to the RandomForest RData file
-threshold: 0.7  # Machine learning probability threshold
+randomforest: # Requirment, path to the RandomForest RData file (usually in 'output_dir')
+threshold: 0.7  # Machine learning probability threshold (should be the same with 'threshold' in the SQANTI3 Filter)
