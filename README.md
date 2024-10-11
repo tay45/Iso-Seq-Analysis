@@ -7,9 +7,12 @@ The pipeline is designed to run on the Apollo server (apollo-acc.coh.org) at Cit
 
 Before running the analysis, ensure the following modules are loaded:
 
-module load smrtlink/13.1,
-module load samtools,
-module load cDNA_Cupcake,
+module load smrtlink/13.1
+
+module load samtools
+
+module load cDNA_Cupcake
+
 module load SQANTI3/5.2.2
 
 ## Running the Pipeline
