@@ -1,62 +1,120 @@
 #!/usr/bin/python
 
 import os
-import os.path
 import subprocess
-import fileinput
-import argparse
 import sys
-import time
-import gzip
-import shutil
+import logging
+import yaml
 
-#Check the input files (no parser) 
-def input_file2 (path):
-	if os.path.isfile(path):
-		return
-	else:
-		print("Doesn't exist. Please check the file location")
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-#Open a config file
-config = open("sample.config", "w")
+# Function to run subprocess commands with error checking
+def run_command(command):
+    try:
+        logging.info(f"Running command: {command}")
+        subprocess.run(command, shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Command failed: {e}")
+        sys.exit(1)
 
-while True:
-	answer = input("Do you still have multiple Iso-Seq jobs to chain together?:")
-	if answer.lower().startswith("n"):
-		print("***Chaining samples***")
-		time.sleep(2)
-		break
-	elif answer.lower().startswith("y"):
-		sample1 = input("Enter the sample name and the path of the collapsed files in this format (SAMPLE=<sample name>;<path>):")
-		config.write(sample1 + '\n')
-		sample2 = input("Enter the sample name and the path of the collapsed files in this format (SAMPLE=<sample name>;<path>):")
-		config.write(sample2 + '\n')
-		while True:
-			answer = input("Do you have more samples to chain?:")
-			if answer.lower().startswith("n"):
-				config.write('\n')
-				config.write("GROUP_FILENAME=collapsed.group.txt" + '\n')
-				config.write("GFF_FILENAME=collapsed.gff" + '\n')
-				config.write("COUNT_FILENAME=collapsed.abundance.txt" + '\n')
-				config.close()
-				subprocess.call("ls *.config", shell = True)
-				time.sleep(2)
-				break
-			elif answer.lower().startswith("y"):
-				sample = input("Enter the sample name and the path of the collapsed files in this format (SAMPLE=<sample name>;<path>):")
-				config.write(sample + '\n')
+# Function to check if a file exists
+def check_file(path, is_required=True):
+    if path and not os.path.isfile(path):
+        if is_required:
+            logging.error(f"File {path} doesn't exist. Exiting...")
+            sys.exit(1)
+        else:
+            logging.warning(f"Optional file {path} is missing. Proceeding without it.")
+    elif not path and is_required:
+        logging.error(f"Required file missing. Exiting...")
+        sys.exit(1)
 
-#Check the path of input file
-input_file2("sample.config")
+# Load configuration from YAML file
+def load_config(config_file):
+    with open(config_file, 'r') as f:
+        return yaml.safe_load(f)
 
-#Current working directory
-current_path = os.path.abspath(os.getcwd())
-print(current_path)
+# Save updated configuration to YAML file
+def save_config(config_file, config_data):
+    with open(config_file, 'w') as f:
+        yaml.safe_dump(config_data, f)
 
-sample_config = os.path.join(current_path, "sample.config")
+# Function to create the sample.config file for cDNA Cupcake's chain_samples.py
+def create_sample_config(samples, output_dir):
+    sample_config_path = os.path.join(output_dir, "sample.config")
+    with open(sample_config_path, 'w') as config:
+        # Write each sample's collapsed file in the format SAMPLE=<sample_name>;<path>
+        for sample in samples:
+            config.write(f"SAMPLE={sample['name']};{sample['collapsed']}\n")
+        
+        # Append fixed configuration values for chaining
+        config.write("\nGROUP_FILENAME=collapsed.group.txt\n")
+        config.write("GFF_FILENAME=collapsed.gff\n")
+        config.write("COUNT_FILENAME=collapsed.abundance.txt\n")
+    
+    logging.info(f"Configuration file created: {sample_config_path}")
+    return sample_config_path
 
-chain = "chain_samples.py" + " " + sample_config + " " + "count_fl " + "--dun-merge-5-shorter" 
-os.system(chain)
+# Main function for chaining
+def chain_samples(config_file, config):
+    # Get chaining-related configurations
+    chain_enabled = config.get("chain_jobs", "no").lower()
+    if chain_enabled != "yes":
+        logging.info("*** Chaining is disabled in the configuration. Skipping chaining process. ***")
+        return config  # Return config as is if no chaining is needed
 
-subprocess.call("ls all_samples.*", shell = True)
-time.sleep(2)
+    # Get output directory and sample output filenames
+    output_dir = config.get("output_dir", "output")
+    input_gtf = config.get("input_gtf", "all_samples.chained.gtf")
+    abundance = config.get("abundance", "all_samples.chained_count.tsv")
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Read sample information from the configuration file
+    samples = config.get("samples", [])
+    if not samples:
+        logging.error("No samples found in configuration. Please specify samples under 'samples' in config.yaml.")
+        sys.exit(1)
+
+    # Create the sample configuration file
+    sample_config = create_sample_config(samples, output_dir)
+
+    # Verify the generated config file exists
+    check_file(sample_config)
+
+    # Run the chain command using the generated sample configuration file
+    # Save output to the `input_gtf` and `abundance` filenames from the config
+    chain_command = f"chain_samples.py {sample_config} count_fl --output-gtf {input_gtf} --output-abundance {abundance} --dun-merge-5-shorter"
+    logging.info(f"Executing chaining command: {chain_command}")
+    run_command(chain_command)
+
+    # List the output files generated by the chaining process
+    logging.info("Listing chained output files...")
+    run_command(f"ls {input_gtf} {abundance}")
+
+    # Save the updated config (with the chained file names if necessary)
+    save_config(config_file, config)
+
+    logging.info("*** Chaining process completed ***")
+    return config  # Return the updated config
+
+
+# Main entry point of the script
+if __name__ == "__main__":
+    # Load configuration file (ensure it is passed as an argument)
+    if len(sys.argv) != 2:
+        logging.error("Usage: python chain.py <config.yaml>")
+        sys.exit(1)
+
+    config_file = sys.argv[1]
+
+    # Load configuration settings
+    config = load_config(config_file)
+
+    # Start the chaining process and update the config
+    updated_config = chain_samples(config_file, config)
+
+    # Inform user to run the SQANTI3 script next
+    logging.info("*** Run the SQANTI3 script using the updated config file. ***")
