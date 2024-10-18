@@ -24,7 +24,7 @@ isoseq3.py
 
 sqanti3.py
 
-chain_fusion.py
+chain.py
 
 config.yaml
 
